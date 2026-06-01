@@ -1,13 +1,25 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom"
+import { Toaster } from "react-hot-toast";
+
+import Router from "router/Router"
+import UserProvider from "contexts/UserProvider";
+import Layout from "layouts/Layout";
 
 function App() {
+  const queryClient = new QueryClient();
+
   return (
-    <>
-      Started
-    </>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <UserProvider>
+          <Layout>
+            <Router />
+          </Layout>
+        </UserProvider>
+        <Toaster />
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 }
 
