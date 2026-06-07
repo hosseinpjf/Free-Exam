@@ -19,7 +19,7 @@ function AuthForm({ inputs }) {
     useEffect(() => {
         if (profile) {
             setUser(profile);
-            navigate('/');
+            navigate('/dashboard');
         }
     }, [profile]);
 
