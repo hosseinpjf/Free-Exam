@@ -1,8 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
-import { databases, ID } from "./config";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { databases, ID, Query } from "./config";
 
 const databaseId = import.meta.env.VITE_APPWRITE_DATABASE_ID;
-// const collectionId = 'questions';
 
 const useCreateQuestion = () => {
     return useMutation({
@@ -45,4 +44,54 @@ const useCreateExam = () => {
     })
 }
 
-export { useCreateQuestion, useCreateExam }
+const useGetExams = () => {
+    return useQuery({
+        queryKey: ['exams'],
+        queryFn: async () => {
+            return await databases.listDocuments({
+                databaseId,
+                collectionId: 'exams',
+                queries: [
+                    Query.orderDesc('$createdAt')
+                ]
+            })
+        }
+    })
+}
+
+const useGetExamQuestions = examId => {
+    return useQuery({
+        queryKey: ['examQuestions', examId],
+        queryFn: async () => {
+            return await databases.listDocuments({
+                databaseId,
+                collectionId: 'questions',
+                queries: [
+                    Query.equal('examId', examId),
+                ]
+            })
+        }
+    })
+}
+
+const useCreateAnswers = () => {
+    return useMutation({
+        mutationFn: async ({ data, examId, createdBy }) => {
+
+            console.log({ data, examId, createdBy });
+
+            for (let index = 0; index < data.length; index++) {
+                await databases.createDocument({
+                    databaseId,
+                    collectionId: 'answers',
+                    documentId: ID.unique(),
+                    data: { ...data[index], examId, createdBy }
+                })
+            }
+
+            return {dataLength: data.length}
+        }
+    })
+}
+
+export { useCreateQuestion, useCreateExam, useGetExams, useGetExamQuestions, useCreateAnswers }

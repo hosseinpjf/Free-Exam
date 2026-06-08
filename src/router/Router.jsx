@@ -5,6 +5,7 @@ import AuthPage from 'pages/AuthPage'
 import DashboardPage from 'pages/DashboardPage'
 import AnswerQuizPage from 'pages/AnswerQuizPage'
 import CreateQuizPage from 'pages/CreateQuizPage'
+import QuestionsPage from 'pages/QuestionsPage'
 
 function Router() {
     return (
@@ -16,6 +17,7 @@ function Router() {
             <Route path='/dashboard/answerQuizPage' element={<AnswerQuizPage />} />
             <Route path='/dashboard/createQuizPage' element={<CreateQuizPage />} />
 
+            <Route path='/dashboard/answerQuizPage/:examId' element={<QuestionsPage />} />
         </Routes>
     )
 }

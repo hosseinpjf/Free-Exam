@@ -4,12 +4,12 @@ import toast from "react-hot-toast";
 import { useCreateQuestion } from "services/question";
 
 function CreateQuestion({ userId, quizType, setQuestions }) {
-    const [form, setForm] = useState({ type: "descriptive", content: "", score: 0, options: [], correctOption: 0 });
+    const [form, setForm] = useState({ type: "", content: "", score: 0, options: [], correctOption: 0 });
     const { mutate } = useCreateQuestion();
 
     const formHandler = e => {
         e.preventDefault();
-        if ((!form.content || !form.score)) {
+        if ((!form.content || !form.score || !form.type)) {
             toast.error('Please fill in all fields.', { id: 'createQuestionFilds' })
             return
         }
@@ -26,7 +26,7 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
             mutate([{ ...form, score: parseFloat(form.score) }, userId], {
                 onSuccess: () => {
                     toast.success('Question creation was successful.', { id: 'createQuestionSucces' });
-                    setForm({ type: "descriptive", content: "", score: 0, options: [] })
+                    setForm({ type: "", content: "", score: 0, options: [] })
                 },
                 onError: () => {
                     toast.error('There was a problem creating the question.', { id: 'createQuestionError' })
@@ -35,8 +35,8 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
         }
         else if (quizType == 'exam') {
             setQuestions(prevQuestions => ([...prevQuestions, ({ ...form, score: parseFloat(form.score) })]))
-            setForm({ type: "descriptive", content: "", score: 0, options: [] })
-            toast.success('Exam creation was successful.', { id: 'createExamSucces' });
+            setForm({ type: "", content: "", score: 0, options: [] })
+            toast.success('Question creation was successful.', { id: 'createQuestionSucces' });
         }
 
     }
@@ -66,7 +66,8 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
                 value={form.content}
             />
             <select onChange={e => selectHandler(e.target.value)} value={form.type}>
-                <option value="descriptive">descriptive</option>
+                <option value="" disabled>choose...</option>
+                {quizType === 'exam' && <option value="descriptive">descriptive</option>}
                 <option value="true-false">true false</option>
                 <option value="multiple-choice">multiple choice</option>
             </select>
@@ -109,19 +110,19 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
                     )}
                 </>
             )}
-            
+
             {form.type === "true-false" && (
                 <>
                     <input
                         type="radio"
                         name="multipleChoice"
-                        onChange={() => setForm(prevForm => ({ ...prevForm, correctOption: 10 }))}
+                        onChange={() => setForm(prevForm => ({ ...prevForm, correctOption: 20 }))}
                     />
                     <p> True </p>
                     <input
                         type="radio"
                         name="multipleChoice"
-                        onChange={() => setForm(prevForm => ({ ...prevForm, correctOption: 20 }))}
+                        onChange={() => setForm(prevForm => ({ ...prevForm, correctOption: 10 }))}
                     />
                     <p> False </p>
                 </>
