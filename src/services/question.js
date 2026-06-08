@@ -11,7 +11,7 @@ const useCreateQuestion = () => {
                 databaseId,
                 collectionId: 'questions',
                 documentId: ID.unique(),
-                data: ({ ...data, createdBy: userId }),
+                data: ({ ...data, createdBy: userId, license: true }),
             })
         }
     })
@@ -19,7 +19,7 @@ const useCreateQuestion = () => {
 
 const useCreateExam = () => {
     return useMutation({
-        mutationFn: async ({ examData, questionsData, userId }) => {
+        mutationFn: async ({ examData, questionsData, userId, license }) => {
             console.log({ examData, questionsData, userId });
 
             const examRequest = await databases.createDocument({
@@ -35,7 +35,7 @@ const useCreateExam = () => {
                     databaseId,
                     collectionId: 'questions',
                     documentId: ID.unique(),
-                    data: ({ ...questionsData[index], createdBy: userId, examId: examRequest.$id }),
+                    data: ({ ...questionsData[index], createdBy: userId, examId: examRequest.$id, license }),
                 });
             }
 
@@ -44,16 +44,30 @@ const useCreateExam = () => {
     })
 }
 
-const useGetExams = () => {
+const useGetExams = access => {
     return useQuery({
-        queryKey: ['exams'],
+        queryKey: ['exams', access],
         queryFn: async () => {
             return await databases.listDocuments({
                 databaseId,
                 collectionId: 'exams',
                 queries: [
-                    Query.orderDesc('$createdAt')
+                    Query.orderDesc('$createdAt'),
+                    Query.equal('access', access),
                 ]
+            })
+        }
+    })
+}
+
+const useGetExam = id => {
+    return useQuery({
+        queryKey: ['exam', id],
+        queryFn: async () => {
+            return await databases.getDocument({
+                databaseId,
+                collectionId: 'exams',
+                documentId: id,
             })
         }
     })
@@ -89,9 +103,16 @@ const useCreateAnswers = () => {
                 })
             }
 
-            return {dataLength: data.length}
+            return { dataLength: data.length }
         }
     })
 }
 
-export { useCreateQuestion, useCreateExam, useGetExams, useGetExamQuestions, useCreateAnswers }
+export {
+    useCreateQuestion,
+    useCreateExam,
+    useGetExams,
+    useGetExam,
+    useGetExamQuestions,
+    useCreateAnswers,
+}

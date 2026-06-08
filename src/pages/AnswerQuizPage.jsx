@@ -3,8 +3,8 @@ import { useGetExams } from "services/question"
 
 function AnswerQuizPage() {
   const navigate = useNavigate();
-  const { data } = useGetExams();
-  console.log(data);
+  const { data: dataPublic } = useGetExams('public');
+  const { data: dataPrivate } = useGetExams('private');
 
   const clickHandler = examId => {
     navigate(`/dashboard/answerQuizPage/${examId}`);
@@ -15,7 +15,14 @@ function AnswerQuizPage() {
       <h2>AnswerQuizPage</h2>
       <div>
         <ul>
-          {data?.documents.map(exam => (
+          <p>Public Exams</p>
+          {dataPublic?.documents.map(exam => (
+            <li key={exam.$id} onClick={() => clickHandler(exam.$id)}>{exam.name}</li>
+          ))}
+        </ul>
+        <ul>
+          <p>Private Exams</p>
+          {dataPrivate?.documents.map(exam => (
             <li key={exam.$id} onClick={() => clickHandler(exam.$id)}>{exam.name}</li>
           ))}
         </ul>

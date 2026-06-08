@@ -18,7 +18,7 @@ function CreateQuizPage() {
         <button onClick={() => setQuizType('exam')} disabled={quizType == 'exam'}>Create exam page</button>
       </div>
       {quizType === 'exam' && (
-        <CreateExam userId={user?.$id} questions={questions} />
+        <CreateExam userId={user?.$id} questions={questions} setQuestions={setQuestions} />
       )}
       <div style={{ border: '2px solid #ccc', margin: '20px' }}>
         <CreateQuestion userId={user?.$id} quizType={quizType} setQuestions={setQuestions} />
