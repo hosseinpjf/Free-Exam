@@ -10,6 +10,7 @@ const paths = [
     "hooks",
     "components",
     "layouts",
+    "helpers",
 ];
 
 export default paths

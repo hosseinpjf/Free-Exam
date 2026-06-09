@@ -8,17 +8,23 @@ import toast from "react-hot-toast";
 function QuestionsPage() {
     const [form, setForm] = useState([]);
     const [password, setPassword] = useState([false, '']);
+    const [checkData, setCheckData] = useState([])
     const { examId } = useParams();
     const { user } = useUser();
-    const { data: examData } = useGetExam(examId);
-    const { data: questionsData } = useGetExamQuestions(examId);
+    const { data: examData, isSuccess } = useGetExam(examId);
+    const { data: questionsData } = useGetExamQuestions(checkData);
     const { mutate } = useCreateAnswers();
 
     useEffect(() => {
-        if (examData?.access === 'private') {
+        if (examData?.access === 'private')
             setPassword([true, '']);
-        }
     }, [examData]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            setCheckData([examId, examData.questions]);
+        }
+    }, [isSuccess])
 
     const answerHandler = (questionId, content) => {
         const findItem = form.findIndex(i => i.questionId == questionId);

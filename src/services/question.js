@@ -6,7 +6,6 @@ const databaseId = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const useCreateQuestion = () => {
     return useMutation({
         mutationFn: async ([data, userId]) => {
-            console.log({ data, userId });
             return await databases.createDocument({
                 databaseId,
                 collectionId: 'questions',
@@ -20,26 +19,22 @@ const useCreateQuestion = () => {
 const useCreateExam = () => {
     return useMutation({
         mutationFn: async ({ examData, questionsData, userId, license }) => {
-            console.log({ examData, questionsData, userId });
-
-            const examRequest = await databases.createDocument({
-                databaseId,
-                collectionId: 'exams',
-                documentId: ID.unique(),
-                data: { ...examData, createdBy: userId },
-            });
-            console.log(examRequest);
-
+            let questions = []
             for (let index = 0; index < questionsData.length; index++) {
-                await databases.createDocument({
+                const question = await databases.createDocument({
                     databaseId,
                     collectionId: 'questions',
                     documentId: ID.unique(),
-                    data: ({ ...questionsData[index], createdBy: userId, examId: examRequest.$id, license }),
+                    data: ({ ...questionsData[index], createdBy: userId, license }),
                 });
+                questions.push(question.$id)
             }
-
-            return { examRequest, questionsDataLength: questionsData.length };
+            return await databases.createDocument({
+                databaseId,
+                collectionId: 'exams',
+                documentId: ID.unique(),
+                data: { ...examData, createdBy: userId, questions },
+            });
         }
     })
 }
@@ -69,31 +64,29 @@ const useGetExam = id => {
                 collectionId: 'exams',
                 documentId: id,
             })
-        }
+        },
     })
 }
 
-const useGetExamQuestions = examId => {
+const useGetExamQuestions = ([examId, questions]) => {
     return useQuery({
         queryKey: ['examQuestions', examId],
         queryFn: async () => {
+            console.log({ examId, questions });
             return await databases.listDocuments({
                 databaseId,
                 collectionId: 'questions',
                 queries: [
-                    Query.equal('examId', examId),
+                    Query.equal('$id', questions),
                 ]
             })
-        }
+        }, enabled: !!examId && !!questions
     })
 }
 
 const useCreateAnswers = () => {
     return useMutation({
         mutationFn: async ({ data, examId, createdBy }) => {
-
-            console.log({ data, examId, createdBy });
-
             for (let index = 0; index < data.length; index++) {
                 await databases.createDocument({
                     databaseId,
@@ -102,9 +95,40 @@ const useCreateAnswers = () => {
                     data: { ...data[index], examId, createdBy }
                 })
             }
-
             return { dataLength: data.length }
         }
+    })
+}
+
+const useCreateFreeExam = () => {
+    return useMutation({
+        mutationFn: async data => {
+            return await databases.createDocument({
+                databaseId,
+                collectionId: 'exams',
+                documentId: ID.unique(),
+                data: data,
+            })
+        }
+    })
+}
+
+const useGetFreeQuestionsId = () => {
+    return useQuery({
+        queryKey: ['freeQuestionsId'],
+        queryFn: async () => {
+            return await databases.listDocuments({
+                databaseId,
+                collectionId: 'questions',
+                queries: [
+                    Query.equal('license', true),
+                    Query.notEqual('type', 'descriptive'),
+                    Query.orderAsc('$createdAt'),
+                    Query.select(['$id']),
+                ]
+            })
+        },
+        enabled: false
     })
 }
 
@@ -115,4 +139,6 @@ export {
     useGetExam,
     useGetExamQuestions,
     useCreateAnswers,
+    useCreateFreeExam,
+    useGetFreeQuestionsId,
 }

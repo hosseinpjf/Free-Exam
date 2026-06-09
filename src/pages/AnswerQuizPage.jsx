@@ -1,3 +1,4 @@
+import FreeExamForm from "components/templates/FreeExamForm";
 import { useNavigate } from "react-router-dom";
 import { useGetExams } from "services/question"
 
@@ -14,18 +15,21 @@ function AnswerQuizPage() {
     <div>
       <h2>AnswerQuizPage</h2>
       <div>
+        <p>Public Exams</p>
         <ul>
-          <p>Public Exams</p>
           {dataPublic?.documents.map(exam => (
             <li key={exam.$id} onClick={() => clickHandler(exam.$id)}>{exam.name}</li>
           ))}
         </ul>
+        <p>Private Exams</p>
         <ul>
-          <p>Private Exams</p>
           {dataPrivate?.documents.map(exam => (
             <li key={exam.$id} onClick={() => clickHandler(exam.$id)}>{exam.name}</li>
           ))}
         </ul>
+      </div>
+      <div>
+        <FreeExamForm />
       </div>
     </div>
   )
