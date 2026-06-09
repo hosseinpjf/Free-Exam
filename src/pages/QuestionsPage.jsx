@@ -2,18 +2,31 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 
 import useUser from "hooks/useUser";
-import { useCreateAnswers, useGetExam, useGetExamQuestions } from "services/question";
+import { useCreateAnswers, useCreateFreeExam, useGetExam, useGetExamQuestions } from "services/question";
 import toast from "react-hot-toast";
 
 function QuestionsPage() {
     const [form, setForm] = useState([]);
     const [password, setPassword] = useState([false, '']);
-    const [checkData, setCheckData] = useState([])
+    const [checkData, setCheckData] = useState([]);
+    const [singleExamId, setSingleExamId] = useState('');
     const { examId } = useParams();
     const { user } = useUser();
     const { data: examData, isSuccess } = useGetExam(examId);
     const { data: questionsData } = useGetExamQuestions(checkData);
     const { mutate } = useCreateAnswers();
+    const { mutate: mutateSingleExam } = useCreateFreeExam();
+
+    useEffect(() => {
+        if(user){
+            mutateSingleExam({ createdBy: user.$id, access: 'single', questions: [`examId:${examId}`] }, {
+                onSuccess: result => {
+                    setSingleExamId(result.$id);
+                    console.log("success", result.$id);
+                }
+            });
+        }
+    }, [user])
 
     useEffect(() => {
         if (examData?.access === 'private')
@@ -62,7 +75,7 @@ function QuestionsPage() {
             finalForm = [...form, ...newForm];
         }
 
-        mutate({ data: finalForm, examId, createdBy: user.$id }, {
+        mutate({ data: finalForm, examId: singleExamId, createdBy: user.$id }, {
             onSuccess: () => {
                 toast.success('Yes')
             },

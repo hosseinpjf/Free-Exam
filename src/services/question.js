@@ -59,11 +59,22 @@ const useGetExam = id => {
     return useQuery({
         queryKey: ['exam', id],
         queryFn: async () => {
-            return await databases.getDocument({
+            const exam = await databases.getDocument({
                 databaseId,
                 collectionId: 'exams',
                 documentId: id,
             })
+            const [type, examId] = exam?.questions[0].split(':');
+            if (type == 'examId') {
+                return await databases.getDocument({
+                    databaseId,
+                    collectionId: 'exams',
+                    documentId: examId,
+                })
+            }
+            else {
+                return exam
+            }
         },
     })
 }
@@ -167,7 +178,41 @@ const useGetMyAnswers = id => {
     })
 }
 
+const useGetAnswers = (createdBy, examId) => {
+    return useQuery({
+        queryKey: ['answers', createdBy, examId],
+        queryFn: async () => {
+            return await databases.listDocuments({
+                databaseId,
+                collectionId: 'answers',
+                queries: [
+                    Query.equal('createdBy', createdBy),
+                    Query.equal('examId', examId),
+                ]
+            })
+        },
+        enabled: !!createdBy && !!examId
+    })
+}
 
+const useGetQuestions = questionsId => {
+    return useQuery({
+        queryKey: ['getQuestions', questionsId],
+        queryFn: async () => {
+            let questions = [];
+            for (let index = 0; index < questionsId.length; index++) {
+                const question = await databases.getDocument({
+                    databaseId,
+                    collectionId: 'questions',
+                    documentId: questionsId[index]
+                })
+                questions.push(question);
+            }
+            return questions
+        },
+        enabled: !!questionsId,
+    })
+}
 
 export {
     useCreateQuestion,
@@ -180,4 +225,6 @@ export {
     useGetFreeQuestionsId,
     useGetMyExams,
     useGetMyAnswers,
+    useGetAnswers,
+    useGetQuestions,
 }

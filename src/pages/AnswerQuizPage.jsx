@@ -8,10 +8,8 @@ function AnswerQuizPage() {
   const { user } = useUser()
   const { data: dataPublic } = useGetExams('public');
   const { data: dataPrivate } = useGetExams('private');
-  const { mutate } = useCreateFreeExam();
 
   const clickHandler = examId => {
-    mutate({ createdBy: user.$id, access: 'single', questions: [examId] })
     navigate(`/dashboard/answerQuizPage/${examId}`);
   }
 
