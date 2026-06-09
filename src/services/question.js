@@ -132,6 +132,43 @@ const useGetFreeQuestionsId = () => {
     })
 }
 
+const useGetMyExams = id => {
+    return useQuery({
+        queryKey: ['myExams', id],
+        queryFn: async () => {
+            return await databases.listDocuments({
+                databaseId,
+                collectionId: 'exams',
+                queries: [
+                    Query.equal('createdBy', id),
+                    Query.notEqual('access', 'single'),
+                    Query.orderDesc('$createdAt'),
+                ]
+            })
+        }, enabled: !!id
+    })
+}
+
+
+const useGetMyAnswers = id => {
+    return useQuery({
+        queryKey: ['myAnswers', id],
+        queryFn: async () => {
+            return await databases.listDocuments({
+                databaseId,
+                collectionId: 'exams',
+                queries: [
+                    Query.equal('createdBy', id),
+                    Query.equal('access', 'single'),
+                    Query.orderDesc('$createdAt'),
+                ]
+            })
+        }, enabled: !!id
+    })
+}
+
+
+
 export {
     useCreateQuestion,
     useCreateExam,
@@ -141,4 +178,6 @@ export {
     useCreateAnswers,
     useCreateFreeExam,
     useGetFreeQuestionsId,
+    useGetMyExams,
+    useGetMyAnswers,
 }
