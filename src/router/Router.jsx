@@ -7,6 +7,7 @@ import AnswerQuizPage from 'pages/AnswerQuizPage'
 import CreateQuizPage from 'pages/CreateQuizPage'
 import QuestionsPage from 'pages/QuestionsPage'
 import AnswersPage from 'pages/AnswersPage'
+import ExamPage from 'pages/ExamPage'
 
 function Router() {
     return (
@@ -19,7 +20,9 @@ function Router() {
             <Route path='/dashboard/createQuizPage' element={<CreateQuizPage />} />
 
             <Route path='/dashboard/answerQuizPage/:examId' element={<QuestionsPage />} />
-            <Route path='/dashboard/:examId' element={<AnswersPage />} />
+
+            <Route path='/dashboard/answers/:examId' element={<AnswersPage />} />
+            <Route path='/dashboard/myExam/:examId' element={<ExamPage />} />
         </Routes>
     )
 }

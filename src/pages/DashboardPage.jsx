@@ -1,17 +1,13 @@
-import { Link, useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { Link } from "react-router-dom"
 
 import useUser from "hooks/useUser"
-import { useGetMyAnswers, useGetMyExams } from "services/question";
+import { useGetExams, useGetMyAnswers, useGetMyExams } from "services/question";
+
+import YourList from "components/templates/YourLitst";
 
 function DashboardPage() {
-    const navigate = useNavigate();
-    const { user } = useUser();
-    const { data: exams } = useGetMyExams(user?.$id);
-    const { data: answers } = useGetMyAnswers(user?.$id);
 
-    const clickHandler = examId => {
-        navigate(`/dashboard/${examId}`);
-    }
 
     return (
         <div>
@@ -22,33 +18,15 @@ function DashboardPage() {
             </div>
             <div style={{ padding: "0 10px", display: "flex", justifyContent: "space-around" }}>
                 <div style={{ flex: '1' }}>
-                    <p>Your Answers</p>
-                    <ul>
-                        {answers?.documents.map(answer => (
-                            <li key={answer.$id} onClick={() => clickHandler(answer.$id)}>
-                                <p>
-                                    {new Date(answer.$createdAt).toLocaleDateString("fa-IR")}---
-                                    {new Date(answer.$createdAt).toLocaleTimeString("fa-IR")}---
-                                    {!!answer.name ? answer.name : 'no name'}
-                                </p>
-                            </li>
-                        ))}
-                    </ul>
+                    <h4>Your Answers</h4>
+                    <YourList type='single' />
                 </div>
                 <div style={{ flex: '1' }}>
-                    <p>Your Exams</p>
-                    <ul>
-                        {exams?.documents.map(exam => (
-                            <li key={exam.$id}>
-                                <p>
-                                    {new Date(exam.$createdAt).toLocaleDateString("fa-IR")}---
-                                    {new Date(exam.$createdAt).toLocaleTimeString("fa-IR")}---
-                                    {exam.access}---
-                                    {!!exam.name ? exam.name : 'no name'}
-                                </p>
-                            </li>
-                        ))}
-                    </ul>
+                    <h4>Your Exams</h4>
+                    <p>--Private--</p>
+                    <YourList type='private' />
+                    <p>--Public--</p>
+                    <YourList type='public' />
                 </div>
             </div>
         </div>
