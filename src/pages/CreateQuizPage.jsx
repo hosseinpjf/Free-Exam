@@ -21,7 +21,7 @@ function CreateQuizPage() {
         <CreateExam userId={user?.$id} questions={questions} setQuestions={setQuestions} />
       )}
       <div style={{ border: '2px solid #ccc', margin: '20px' }}>
-        <CreateQuestion userId={user?.$id} quizType={quizType} setQuestions={setQuestions} />
+        <CreateQuestion userId={user?.$id} quizType={quizType} questionsLength={questions.length} setQuestions={setQuestions} />
       </div>
     </div>
   )

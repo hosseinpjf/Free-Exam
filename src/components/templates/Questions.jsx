@@ -1,7 +1,5 @@
 function Questions({ type, access, scoreExam, questions, answers, form, setForm }) {
 
-    console.log({ access, scoreExam });
-
     const answerHandler = (questionId, content, correctOption, score) => {
         const findItem = form.findIndex(i => i.questionId == questionId);
         let yourScore, numberCorrect;
@@ -52,6 +50,7 @@ function Questions({ type, access, scoreExam, questions, answers, form, setForm 
             <ul>
                 {questions?.map((question, index) => (
                     <li key={question.$id || index}>
+                        {!access && (<p>{question.order}</p>)}
                         {!access && (<p>score: {question.score}</p>)}
                         <p>{question.content}</p>
                         {question.type === 'descriptive' && (
@@ -60,7 +59,7 @@ function Questions({ type, access, scoreExam, questions, answers, form, setForm 
                                 {(type == 'show' || type == 'TeacherForm') && (
                                     <>
                                         <p>{findAnswer(question.$id).content}</p>
-                                        {!access && (<p>--- Your Score: {findAnswer(question.$id).scoreAnswer || 'Awaiting confirmation'} ---</p>)}
+                                        {!access && (<p>--- Your Score: {findAnswer(question.$id).scoreAnswer || (findAnswer(question.$id).scoreAnswer == 0 && '0') || 'Awaiting confirmation'} ---</p>)}
                                     </>
                                 )}
                                 {(type == 'TeacherForm') && (<input type="number" onChange={e => sendScore(question.$id, e.target.value)} min={0} max={question.score} />)}

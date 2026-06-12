@@ -18,7 +18,6 @@ function AnswersPage() {
     useEffect(() => {
         if (user) setDatas(prevDatas => ({ ...prevDatas, userId: user.$id }));
     }, [user])
-    console.log({ exam });
 
     useEffect(() => {
         if (answers) {

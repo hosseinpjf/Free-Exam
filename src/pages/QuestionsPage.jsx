@@ -13,7 +13,6 @@ function QuestionsPage() {
     const [checkData, setCheckData] = useState([]);
     const [singleExamId, setSingleExamId] = useState('');
     const [verifiedExamID, setVerifiedExamID] = useState('');
-    // const [scoreSingle, setScoreSingle] = useState(null);
 
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -28,12 +27,14 @@ function QuestionsPage() {
     const { data: exams } = useGetExams('single');
     const { mutate: updateScoreExam } = useUpdateScoreExam();
 
+    console.log({questionsData});
+
 
     useEffect(() => {
         if (!exams || !user || !checkSingle) return
 
         if (checkPrevExam()) {
-            toast.error('You have already taken this Exam.', { id: 'checkPrevExam' })
+            // toast.error('You have already taken this Exam.', { id: 'checkPrevExam' })
             return
         }
 
@@ -99,7 +100,7 @@ function QuestionsPage() {
         }
 
         let finalForm = [...form];
-        const missingIds = questionsData.documents.filter(item1 => !form.some(item2 => item2.questionId == item1.$id));
+        const missingIds = questionsData.filter(item1 => !form.some(item2 => item2.questionId == item1.$id));
 
         if (!!missingIds.length) {
             const newForm = missingIds.map(item => (
@@ -138,7 +139,7 @@ function QuestionsPage() {
                 </form>
             ) : (
                 <form onSubmit={formHandler}>
-                    <Questions type='answerForm' access={(singleExamId == verifiedExamID)} questions={questionsData?.documents} form={form} setForm={setForm} />
+                    <Questions type='answerForm' access={(singleExamId == verifiedExamID)} questions={questionsData} form={form} setForm={setForm} />
                     <button type="submit">End</button>
                 </form>
             )}

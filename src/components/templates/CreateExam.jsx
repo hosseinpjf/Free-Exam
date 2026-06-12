@@ -9,8 +9,6 @@ function CreateExam({ userId, questions, setQuestions }) {
     const [license, setLicense] = useState(false);
     const { mutate } = useCreateExam();
 
-    console.log({ questions });
-
     const formHandler = e => {
         e.preventDefault();
 

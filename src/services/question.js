@@ -118,13 +118,15 @@ const useGetExamQuestions = ([examId, questions]) => {
     return useQuery({
         queryKey: ['examQuestions', examId],
         queryFn: async () => {
-            return await databases.listDocuments({
+            const questionsData = await databases.listDocuments({
                 databaseId,
                 collectionId: 'questions',
                 queries: [
                     Query.equal('$id', questions),
                 ]
             })
+            const finalQuestions = questionsData.documents.sort((a, b) => a.order -  b.order );
+            return finalQuestions;
         }, enabled: !!examId && !!questions
     })
 }
@@ -183,7 +185,6 @@ const useGetMyAnswers = id => {
 }
 
 const useGetAnswers = (createdBy, myExamId) => {
-    console.log({ createdBy, myExamId });
     return useQuery({
         queryKey: ['answers', createdBy, myExamId],
         queryFn: async () => {
@@ -213,7 +214,8 @@ const useGetQuestions = questionsId => {
                 })
                 questions.push(question);
             }
-            return questions
+            const finalQuestions = questions.sort((a, b) => a.order - b.order);
+            return finalQuestions
         },
         enabled: !!questionsId.length,
     })
@@ -239,7 +241,6 @@ const useGetExamUsers = examId => {
     return useQuery({
         queryKey: ['examUsers', examId],
         queryFn: async () => {
-            console.log({ examId });
             const examUsers = await databases.listDocuments({
                 databaseId,
                 collectionId: 'answers',
@@ -270,7 +271,6 @@ const useCheckEndExam = myExamId => {
 }
 
 const useGetAnswersUser = (createdBy, examId) => {
-    console.log({ createdBy, examId });
     return useQuery({
         queryKey: ['answersUser', examId, createdBy],
         queryFn: async () => {
@@ -299,6 +299,23 @@ const useGetSingleExam = id => {
     })
 }
 
+const useGetUser = ids => {
+    return useQuery({
+        queryKey: ['getUser', ids],
+        queryFn: async () => {
+            return await databases.listDocuments({
+                databaseId,
+                collectionId: 'users',
+                // documentId: id,
+                queries: [
+                    Query.equal('$id', ids)
+                ]
+            })
+        },
+        enabled: !!ids?.length
+    })
+}
+
 // --------------------------------------------- Update --------------------------------------------- //
 
 const useUpdateScoreAnswer = () => {
@@ -320,7 +337,6 @@ const useUpdateScoreAnswer = () => {
 const useUpdateScoreExam = () => {
     return useMutation({
         mutationFn: async ({ examId, scoreExam }) => {
-            console.log({ examId, scoreExam });
             return await databases.updateDocument({
                 databaseId,
                 collectionId: 'exams',
@@ -351,4 +367,5 @@ export {
     useUpdateScoreAnswer,
     useUpdateScoreExam,
     useGetSingleExam,
+    useGetUser,
 }

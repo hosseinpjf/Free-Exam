@@ -1,10 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { account, ID } from "./config"
+import { account, databases, ID } from "./config"
+
+const databaseId = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+const collectionId = 'users';
 
 const useRegister = () => {
     return useMutation({
         mutationFn: async ({ name, email, password }) => {
-            await account.create({
+            const newUser = await account.create({
                 name,
                 email,
                 password,
@@ -17,6 +20,12 @@ const useRegister = () => {
             await account.createVerification({
                 url: 'http://localhost:5173/'
             });
+            await databases.createDocument({
+                databaseId,
+                collectionId,
+                documentId: newUser.$id,
+                data: { name: newUser.name },
+            })
             return { name, email }
         }
     })

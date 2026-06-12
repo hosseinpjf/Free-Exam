@@ -3,8 +3,8 @@ import toast from "react-hot-toast";
 
 import { useCreateQuestion } from "services/question";
 
-function CreateQuestion({ userId, quizType, setQuestions }) {
-    const [form, setForm] = useState({ type: "", content: "", score: 0, options: [], correctOption: 0 });
+function CreateQuestion({ userId, quizType, questionsLength, setQuestions }) {
+    const [form, setForm] = useState({ type: "", content: "", score: 0, options: [], correctOption: 0, order: null });
     const { mutate } = useCreateQuestion();
 
     const formHandler = e => {
@@ -30,7 +30,7 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
             mutate([{ ...form, score: null }, userId], {
                 onSuccess: () => {
                     toast.success('Question creation was successful.', { id: 'createQuestionSucces' });
-                    setForm({ type: "", content: "", score: 0, options: [] })
+                    setForm({ type: "", content: "", score: 0, options: [], correctOption: 0, order: null })
                 },
                 onError: () => {
                     toast.error('There was a problem creating the question.', { id: 'createQuestionError' })
@@ -38,8 +38,8 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
             });
         }
         else if (quizType == 'exam') {
-            setQuestions(prevQuestions => ([...prevQuestions, ({ ...form, score: parseFloat(form.score) })]))
-            setForm({ type: "", content: "", score: 0, options: [] })
+            setQuestions(prevQuestions => ([...prevQuestions, ({ ...form, score: parseFloat(form.score), order: questionsLength + 1 })]))
+            setForm({ type: "", content: "", score: 0, options: [], correctOption: 0, order: null })
             toast.success('Question creation was successful.', { id: 'createQuestionSucces' });
         }
 
