@@ -2,6 +2,7 @@ import { useState } from "react"
 import toast from "react-hot-toast";
 
 import { useCreateExam } from "services/question";
+import Questions from "./Questions";
 
 function CreateExam({ userId, questions, setQuestions }) {
     const [examForm, setExamForm] = useState({ name: '', access: '', password: '' });
@@ -66,13 +67,7 @@ function CreateExam({ userId, questions, setQuestions }) {
             </form>
 
             <div>
-                {questions.map((question, index) => (
-                    <div key={index}>
-                        <span> {question.type} </span>
-                        <span> {question.content} </span>
-                        <span> {question.score} </span>
-                    </div>
-                ))}
+                <Questions questions={questions} />
             </div>
         </div>
     )

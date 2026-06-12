@@ -183,6 +183,7 @@ const useGetMyAnswers = id => {
 }
 
 const useGetAnswers = (createdBy, myExamId) => {
+    console.log({ createdBy, myExamId });
     return useQuery({
         queryKey: ['answers', createdBy, myExamId],
         queryFn: async () => {
@@ -214,7 +215,7 @@ const useGetQuestions = questionsId => {
             }
             return questions
         },
-        enabled: !!questionsId,
+        enabled: !!questionsId.length,
     })
 }
 
@@ -238,6 +239,7 @@ const useGetExamUsers = examId => {
     return useQuery({
         queryKey: ['examUsers', examId],
         queryFn: async () => {
+            console.log({ examId });
             const examUsers = await databases.listDocuments({
                 databaseId,
                 collectionId: 'answers',
@@ -251,19 +253,36 @@ const useGetExamUsers = examId => {
     })
 }
 
-const filterData = (collectionId, queryKey, queryValue) => {
+const useCheckEndExam = myExamId => {
     return useQuery({
-        queryKey: ['filterData', collectionId, queryKey, queryValue],
+        queryKey: ['checkEndExam', myExamId],
         queryFn: async () => {
             return await databases.listDocuments({
                 databaseId,
-                collectionId,
+                collectionId: 'answers',
                 queries: [
-                    Query.equal(queryKey, queryValue)
+                    Query.equal('myExamId', myExamId)
                 ]
             })
         },
-        enabled: !!queryValue
+        enabled: !!myExamId
+    })
+}
+
+const useGetAnswersUser = (createdBy, examId) => {
+    console.log({ createdBy, examId });
+    return useQuery({
+        queryKey: ['answersUser', examId, createdBy],
+        queryFn: async () => {
+           return await databases.listDocuments({
+                databaseId,
+                collectionId: 'answers',
+                queries: [
+                    Query.equal('examId', examId),
+                    Query.equal('createdBy', createdBy),
+                ]
+            })
+        }, enabled: !!createdBy
     })
 }
 
@@ -282,5 +301,6 @@ export {
     useGetQuestions,
     useGetCheckSingleExam,
     useGetExamUsers,
-    filterData,
+    useCheckEndExam,
+    useGetAnswersUser,
 }

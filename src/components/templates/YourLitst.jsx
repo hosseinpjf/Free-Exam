@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import useUser from "hooks/useUser";
-import { filterData, useGetExams } from "services/question";
+import { useCheckEndExam, useGetExams } from "services/question";
 
 function YourList({ type }) {
   const [datas, setDatas] = useState({ userId: '', examId: '' });
@@ -10,7 +10,7 @@ function YourList({ type }) {
 
   const { user } = useUser();
   const { data: exams } = useGetExams(undefined, datas.userId);
-  const { data: filterAnswers, isSuccess } = filterData('answers', 'myExamId', datas.examId);
+  const { data: checkEndExam, isSuccess } = useCheckEndExam(datas.examId);
 
   useEffect(() => {
     if (user) setDatas(prevDatas => ({ ...prevDatas, userId: user.$id }))
@@ -18,23 +18,15 @@ function YourList({ type }) {
 
   useEffect(() => {
     if (datas.examId && isSuccess) clickItemHandler(datas.examId);
-  }, [datas, isSuccess])
+  }, [datas.examId, isSuccess]);
 
   const clickItemHandler = id => {
     if (type == 'single') {
-      // setDatas(prevDatas => ({ ...prevDatas, examId: id }))
-      // await refetch();
-      console.log(filterAnswers.total);
-      if (!filterAnswers.total) {
-        navigate(`/dashboard/answerQuizPage/${id}`);
-      }
-      else{
-        navigate(`/dashboard/answers/${id}`);
-      }
-    }
-    else if (type == 'private' || 'public') {
-      navigate(`/dashboard/myExam/${id}`);
-    }
+
+      if (!checkEndExam.total) navigate(`/dashboard/answerQuizPage/${id}`)
+      else navigate(`/dashboard/answers/${id}`);
+
+    } else if (type == 'private' || type == 'public') navigate(`/dashboard/myExam/${id}`);
   }
 
   return (
@@ -42,7 +34,7 @@ function YourList({ type }) {
       <ul>
         {exams?.documents.filter(item => item.access == type).map(item => (
           // <li key={item.$id} onClick={() => clickItemHandler(item.$id)}>
-          <li key={item.$id} onClick={() => setDatas(prevDatas => ({ ...prevDatas, examId: item.$id }))}>
+          <li key={item.$id} onClick={() => type == 'single' ? setDatas(prevDatas => ({ ...prevDatas, examId: item.$id })) : clickItemHandler(item.$id)}>
             <p>
               {new Date(item.$createdAt).toLocaleDateString("fa-IR")}---
               {new Date(item.$createdAt).toLocaleTimeString("fa-IR")}---

@@ -12,7 +12,7 @@ function QuestionsPage() {
     const [password, setPassword] = useState([false, '']);
     const [checkData, setCheckData] = useState([]);
     const [singleExamId, setSingleExamId] = useState('');
-    // const [datas, setDatas] = useState({ userId: '' });
+    const [verifiedExamID, setVerifiedExamID] = useState('');
 
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -25,33 +25,38 @@ function QuestionsPage() {
     const { mutate: mutateSingleExam } = useCreateFreeExam();
     const { data: checkSingle } = useGetCheckSingleExam(examId);
     const { data: exams } = useGetExams('single');
-    // const { data: checkPrevExam } = useGetCheckPrevExam(examId, datas.userId);
 
-    // useEffect(() => {
-    //     if(user) setDatas(prevDatas => ({...prevDatas, userId: user.$id}))
-    // }, [user])
-
-    console.log({ exams });
 
     useEffect(() => {
-
-        if (!exams) return
+        if (!exams || !user || !checkSingle) return
 
         if (checkPrevExam()) {
             toast.error('You have already taken this Exam.', { id: 'checkPrevExam' })
             return
         }
 
-        if (user && checkSingle && !checkSingle.total) {
+        const confirmSingle = checkSingle.documents[0]?.questions[0]?.split(':')[0] == 'examId';
+
+        // از قبل ساخته نشده (میخواد آزمون بده)
+        if (user && !checkSingle.total) {
             mutateSingleExam({ createdBy: user.$id, access: 'single', questions: [`examId:${examId}`] }, {
                 onSuccess: result => {
                     setSingleExamId(result.$id);
+                    setVerifiedExamID(examId);
                 }
             });
         }
-        if (checkSingle?.total) {
-            setSingleExamId(checkSingle.documents[0].$id)
+        // از قبل ساخته شده بعدش آزمون ول کرده
+        else if (!!checkSingle.total && confirmSingle) {
+            setSingleExamId(checkSingle.documents[0].$id);
+            setVerifiedExamID(checkSingle.documents[0].questions[0].split(':')[1]);
         }
+        // از قبل ساخته شده (میخواد آزمون آزاد بده)
+        else if (!!checkSingle.total && !confirmSingle) {
+            setSingleExamId(checkSingle.documents[0].$id);
+            setVerifiedExamID(checkSingle.documents[0].$id);
+        }
+
     }, [user, checkSingle, exams])
 
     useEffect(() => {
@@ -101,10 +106,10 @@ function QuestionsPage() {
             finalForm = [...form, ...newForm];
         }
 
-        mutate({ data: finalForm, examId, myExamId: singleExamId, createdBy: user.$id }, {
+        mutate({ data: finalForm, examId: verifiedExamID, myExamId: singleExamId, createdBy: user.$id }, {
             onSuccess: () => {
                 toast.success('Yes');
-                queryClient.removeQueries({queryKey: ['filterData','answers', 'myExamId', singleExamId]})
+                queryClient.removeQueries({ queryKey: ['checkEndExam', singleExamId] })
                 navigate('/dashboard');
             },
             onError: () => toast.error('No')
@@ -113,7 +118,7 @@ function QuestionsPage() {
 
     return (
         <div>
-            <h2>QuestionsPage - {examData?.name}</h2>
+            <h2>QuestionsPage - {examData?.name || 'Free Exam'}</h2>
             {password[0] ? (
                 <form onSubmit={passwordHandler}>
                     <p>Enter the password for this exam...</p>
