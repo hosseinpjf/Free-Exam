@@ -9,7 +9,7 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
 
     const formHandler = e => {
         e.preventDefault();
-        if ((!form.content || !form.score || !form.type)) {
+        if ((!form.content || !form.type)) {
             toast.error('Please fill in all fields.', { id: 'createQuestionFilds' })
             return
         }
@@ -21,9 +21,13 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
             toast.error('Please fill in all fields.', { id: 'createQuestionFilds' })
             return
         }
+        if (quizType == 'exam' && !form.score) {
+            toast.error('Please fill in all fields.', { id: 'createQuestionFilds' })
+            return
+        }
 
         if (quizType == 'question') {
-            mutate([{ ...form, score: parseFloat(form.score) }, userId], {
+            mutate([{ ...form, score: null }, userId], {
                 onSuccess: () => {
                     toast.success('Question creation was successful.', { id: 'createQuestionSucces' });
                     setForm({ type: "", content: "", score: 0, options: [] })
@@ -71,12 +75,14 @@ function CreateQuestion({ userId, quizType, setQuestions }) {
                 <option value="true-false">true false</option>
                 <option value="multiple-choice">multiple choice</option>
             </select>
-            <input
-                type="number"
-                placeholder="score"
-                onChange={e => setForm(prevForm => ({ ...prevForm, score: e.target.value }))}
-                value={form.score}
-            />
+            {quizType === 'exam' && (
+                <input
+                    type="number"
+                    placeholder="score"
+                    onChange={e => setForm(prevForm => ({ ...prevForm, score: e.target.value }))}
+                    value={form.score}
+                />
+            )}
             <br />
             {form.type === "multiple-choice" && (
                 <>

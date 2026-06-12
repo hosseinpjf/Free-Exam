@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 
 import useUser from "hooks/useUser";
-import { useCreateAnswers, useCreateFreeExam, useGetCheckSingleExam, useGetExam, useGetExamQuestions, useGetExams } from "services/question";
+import { useCreateAnswers, useCreateFreeExam, useGetCheckSingleExam, useGetExam, useGetExamQuestions, useGetExams, useUpdateScoreExam } from "services/question";
 import toast from "react-hot-toast";
 import Questions from "components/templates/Questions";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ function QuestionsPage() {
     const [checkData, setCheckData] = useState([]);
     const [singleExamId, setSingleExamId] = useState('');
     const [verifiedExamID, setVerifiedExamID] = useState('');
+    // const [scoreSingle, setScoreSingle] = useState(null);
 
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -25,6 +26,7 @@ function QuestionsPage() {
     const { mutate: mutateSingleExam } = useCreateFreeExam();
     const { data: checkSingle } = useGetCheckSingleExam(examId);
     const { data: exams } = useGetExams('single');
+    const { mutate: updateScoreExam } = useUpdateScoreExam();
 
 
     useEffect(() => {
@@ -101,12 +103,21 @@ function QuestionsPage() {
 
         if (!!missingIds.length) {
             const newForm = missingIds.map(item => (
-                { questionId: item.$id, content: 'no answer' }
+                { questionId: item.$id, content: 'no answer', scoreAnswer: 0, numberCorrect: false }
             ))
             finalForm = [...form, ...newForm];
         }
 
-        mutate({ data: finalForm, examId: verifiedExamID, myExamId: singleExamId, createdBy: user.$id }, {
+        let scoreSingle;
+        const confirmSingle = checkSingle.documents[0]?.questions[0]?.split(':')[0] == 'examId';
+        if (!!checkSingle.total && !confirmSingle) {
+            scoreSingle = finalForm.map(item => item.numberCorrect).filter(item => !!item);
+            updateScoreExam({ examId: singleExamId, scoreExam: scoreSingle.length });
+        }
+
+        const dataToSend = finalForm.map(({ numberCorrect, ...rest }) => rest);
+
+        mutate({ data: dataToSend, examId: verifiedExamID, myExamId: singleExamId, createdBy: user.$id }, {
             onSuccess: () => {
                 toast.success('Yes');
                 queryClient.removeQueries({ queryKey: ['checkEndExam', singleExamId] })
@@ -127,7 +138,7 @@ function QuestionsPage() {
                 </form>
             ) : (
                 <form onSubmit={formHandler}>
-                    <Questions type='form' questions={questionsData?.documents} form={form} setForm={setForm} />
+                    <Questions type='answerForm' access={(singleExamId == verifiedExamID)} questions={questionsData?.documents} form={form} setForm={setForm} />
                     <button type="submit">End</button>
                 </form>
             )}

@@ -274,7 +274,7 @@ const useGetAnswersUser = (createdBy, examId) => {
     return useQuery({
         queryKey: ['answersUser', examId, createdBy],
         queryFn: async () => {
-           return await databases.listDocuments({
+            return await databases.listDocuments({
                 databaseId,
                 collectionId: 'answers',
                 queries: [
@@ -283,6 +283,51 @@ const useGetAnswersUser = (createdBy, examId) => {
                 ]
             })
         }, enabled: !!createdBy
+    })
+}
+
+const useGetSingleExam = id => {
+    return useQuery({
+        queryKey: ['singleExam', id],
+        queryFn: async () => {
+            return await databases.getDocument({
+                databaseId,
+                collectionId: 'exams',
+                documentId: id,
+            })
+        },
+    })
+}
+
+// --------------------------------------------- Update --------------------------------------------- //
+
+const useUpdateScoreAnswer = () => {
+    return useMutation({
+        mutationFn: async scoresAnswer => {
+            for (let index = 0; index < scoresAnswer.length; index++) {
+                await databases.updateDocument({
+                    databaseId,
+                    collectionId: 'answers',
+                    documentId: scoresAnswer[index].answerId,
+                    data: { scoreAnswer: parseFloat(scoresAnswer[index].scoreAnswer) },
+                })
+            }
+            return scoresAnswer.length
+        }
+    })
+}
+
+const useUpdateScoreExam = () => {
+    return useMutation({
+        mutationFn: async ({ examId, scoreExam }) => {
+            console.log({ examId, scoreExam });
+            return await databases.updateDocument({
+                databaseId,
+                collectionId: 'exams',
+                documentId: examId,
+                data: { scoreExam },
+            })
+        }
     })
 }
 
@@ -303,4 +348,7 @@ export {
     useGetExamUsers,
     useCheckEndExam,
     useGetAnswersUser,
+    useUpdateScoreAnswer,
+    useUpdateScoreExam,
+    useGetSingleExam,
 }
