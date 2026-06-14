@@ -7,7 +7,16 @@ import UserProvider from "contexts/UserProvider";
 import Layout from "layouts/Layout";
 
 function App() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // refetchOnWindowFocus: false,
+        // refetchOnMount: true,
+        // staleTime: 60 * 1000,
+        retry: 1,
+      }
+    }
+  });
 
   return (
     <QueryClientProvider client={queryClient}>

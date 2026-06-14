@@ -72,7 +72,7 @@ const useCreateFreeExam = () => {
 
 // --------------------------------------------- Get --------------------------------------------- //
 
-const useGetExams = (access, createdBy) => {
+const useGetExams = (access, createdBy, license) => {
     return useQuery({
         queryKey: ['exams', access || 'all'],
         queryFn: async () => {
@@ -86,7 +86,7 @@ const useGetExams = (access, createdBy) => {
                 ]
             })
         },
-        enabled: !!access || !!createdBy
+        enabled: !!access || !!createdBy || !!license
     })
 }
 
@@ -125,7 +125,7 @@ const useGetExamQuestions = ([examId, questions]) => {
                     Query.equal('$id', questions),
                 ]
             })
-            const finalQuestions = questionsData.documents.sort((a, b) => a.order -  b.order );
+            const finalQuestions = questionsData.documents.sort((a, b) => a.order - b.order);
             return finalQuestions;
         }, enabled: !!examId && !!questions
     })
@@ -316,6 +316,56 @@ const useGetUser = ids => {
     })
 }
 
+const useGetQuestionsLength = () => {
+    return useQuery({
+        queryKey: ['questionsLength'],
+        queryFn: async () => {
+            const listData = await databases.listDocuments({
+                databaseId,
+                collectionId: 'questions',
+                queries: [
+                    Query.limit(1),
+                    Query.select('$id'),
+                ]
+            })
+            return listData.total
+        }
+    })
+}
+const useGetUsersLength = () => {
+    return useQuery({
+        queryKey: ['usersLength'],
+        queryFn: async () => {
+            const listData = await databases.listDocuments({
+                databaseId,
+                collectionId: 'users',
+                queries: [
+                    Query.limit(1),
+                    Query.select('$id'),
+                ]
+            })
+            return listData.total
+        }
+    })
+}
+const useGetExamsLength = () => {
+    return useQuery({
+        queryKey: ['examsLength'],
+        queryFn: async () => {
+            const listData = await databases.listDocuments({
+                databaseId,
+                collectionId: 'exams',
+                queries: [
+                    Query.limit(1),
+                    Query.select('$id'),
+                    Query.notEqual('access', 'single')
+                ]
+            })
+            return listData.total
+        }
+    })
+}
+
 // --------------------------------------------- Update --------------------------------------------- //
 
 const useUpdateScoreAnswer = () => {
@@ -368,4 +418,7 @@ export {
     useUpdateScoreExam,
     useGetSingleExam,
     useGetUser,
+    useGetQuestionsLength,
+    useGetUsersLength,
+    useGetExamsLength,
 }

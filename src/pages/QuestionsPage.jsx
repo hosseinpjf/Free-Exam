@@ -6,6 +6,7 @@ import { useCreateAnswers, useCreateFreeExam, useGetCheckSingleExam, useGetExam,
 import toast from "react-hot-toast";
 import Questions from "components/templates/Questions";
 import { useQueryClient } from "@tanstack/react-query";
+import Loader from "components/modules/Loader";
 
 function QuestionsPage() {
     const [form, setForm] = useState([]);
@@ -19,16 +20,13 @@ function QuestionsPage() {
 
     const { examId } = useParams();
     const { user } = useUser();
-    const { data: examData, isSuccess } = useGetExam(examId);
-    const { data: questionsData } = useGetExamQuestions(checkData);
+    const { data: examData, isSuccess, isPending: pendingExam } = useGetExam(examId);
+    const { data: questionsData, isPending: pendingExamQuestions } = useGetExamQuestions(checkData);
     const { mutate } = useCreateAnswers();
     const { mutate: mutateSingleExam } = useCreateFreeExam();
     const { data: checkSingle } = useGetCheckSingleExam(examId);
     const { data: exams } = useGetExams('single');
     const { mutate: updateScoreExam } = useUpdateScoreExam();
-
-    console.log({questionsData});
-
 
     useEffect(() => {
         if (!exams || !user || !checkSingle) return
@@ -128,19 +126,21 @@ function QuestionsPage() {
         })
     }
 
+    if(pendingExam || pendingExamQuestions) return <Loader position='centerLoader   ' />
     return (
-        <div>
-            <h2>QuestionsPage - {examData?.name || 'Free Exam'}</h2>
+        <div className="questionsPage">
+            <h2 className="title">Questions Page</h2>
+            <h2 className="nameExam">{examData?.name || 'Free Exam'}</h2>
             {password[0] ? (
-                <form onSubmit={passwordHandler}>
+                <form className="getPassword" onSubmit={passwordHandler}>
                     <p>Enter the password for this exam...</p>
-                    <input type="password" onChange={e => setPassword([true, e.target.value])} />
+                    <input placeholder="Enter password" type="password" onChange={e => setPassword([true, e.target.value])} />
                     <button type="submit">Check Password</button>
                 </form>
             ) : (
                 <form onSubmit={formHandler}>
                     <Questions type='answerForm' access={(singleExamId == verifiedExamID)} questions={questionsData} form={form} setForm={setForm} />
-                    <button type="submit">End</button>
+                    <button type="submit">End of the exam</button>
                 </form>
             )}
         </div>

@@ -33,19 +33,20 @@ function FreeExamForm() {
     }
 
     return (
-        <div>
-            <p>Free Exam Form</p>
+        <>
+            {/* <p>Free Exam Form</p> */}
             <form onSubmit={formHandler}>
+                <button type="submit">Create A Free Exam</button>
                 <input
+                    placeholder="Number of questions"
                     type="number"
                     min='1'
                     max='20'
                     value={form.numberQuestions}
                     onChange={e => setForm(prevForm => ({ ...prevForm, numberQuestions: e.target.value }))}
                 />
-                <button type="submit">Create a Exam</button>
             </form>
-        </div>
+        </>
     )
 }
 

@@ -50,6 +50,7 @@
   }
 }
 
+/* 
 h1,h2,h3,h4,h5,h6{
   margin: 0;
 }
@@ -58,7 +59,7 @@ button{
   cursor: pointer;
 }
 
-/* body {
+body {
   margin: 0;
 }
 
@@ -117,3 +118,489 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 } */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Classes */
+
+.boxShadow {
+  box-shadow: 0 0 10px 0px #ccc;
+  border-radius: 10px;
+}
+
+button,
+a {
+  color: currentColor;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 2px solid #878787;
+  padding: 10px 20px;
+  border-radius: 6px;
+  outline: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .1s;
+}
+
+button:hover,
+a:hover {
+  background-color: rgba(225, 225, 225, 0.1);
+}
+
+input,
+select {
+  border: 2px solid #878787;
+  outline: none;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+label {
+  display: inline-block;
+  cursor: pointer;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.title {
+  position: relative;
+  margin: 0 0 70px;
+}
+
+.title::after {
+  content: '';
+  width: 100%;
+  height: 1px;
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  background-color: #878787;
+}
+
+.showButtons {
+  flex: 1 1 300px;
+}
+
+.showButtons h4 {
+  margin: 0 0 8px;
+}
+
+.showButtons > div {
+  display: flex;
+}
+
+.showButtons button:first-of-type {
+  border-right: none;
+  border-radius: 0 0 0 6px;
+  flex: 1;
+}
+
+.showButtons button:last-of-type {
+  border-radius: 0 0 6px 0;
+  flex: 1;
+}
+
+.yourList {
+  margin-top: 20px;
+}
+
+.yourList ul {
+  width: 100%;
+  list-style-type: none;
+}
+
+.yourList li,
+.answerQuizPage li {
+  display: flex;
+  gap: 10px;
+  cursor: pointer;
+  margin: 10px;
+  border: 1px solid #686868;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.yourList li p:first-of-type {
+  flex: 1;
+}
+
+.yourList>p {
+  text-align: center;
+  width: 100%;
+}
+
+.answerQuizPage section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.answerQuizPage section>div {
+  flex: 1 1 300px;
+}
+
+.answerQuizPage .buttons {
+  display: flex;
+}
+
+.answerQuizPage .buttons button:first-of-type {
+  border-radius: 6px 0 0 6px;
+  flex: 1;
+}
+
+.answerQuizPage .buttons button:last-of-type {
+  border-radius: 0 6px 6px 0;
+  border-left: none;
+  flex: 1;
+}
+
+.answerQuizPage li p:first-of-type {
+  flex: 1;
+}
+
+.freeExamForm form {
+  display: flex;
+}
+
+.freeExamForm form input {
+  border-radius: 0 6px 6px 0;
+  flex: 1;
+}
+
+.freeExamForm form button {
+  border-radius: 6px 0 0 6px;
+  border-right: none;
+  flex: 1;
+}
+
+.createQuizPage div:first-of-type {
+  display: flex;
+}
+
+.createQuizPage div:first-of-type button:first-of-type {
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  flex: 1;
+}
+
+.createQuizPage div:first-of-type button:last-of-type {
+  border-radius: 0 6px 6px 0;
+  flex: 1;
+}
+
+.createQuestion .form {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20px 0 40px;
+  gap: 10px;
+}
+
+.createQuestion>button {
+  width: 100%;
+  margin: 40px 0 0;
+}
+
+.createQuestion .form select,
+.createQuestion .form input {
+  flex: 1;
+  border-radius: 6px;
+}
+
+.createQuestion .trueFalse input[type=radio],
+.createQuestion .multiple input[type=radio] {
+  display: none;
+}
+
+.createQuestion .trueFalse {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.createQuestion .trueFalse label {
+  border: 2px solid #878787;
+  border-radius: 6px;
+  padding: 10px 40px;
+}
+
+.createQuestion .trueFalse label:first-of-type {
+  margin: 0 20px 0 0;
+}
+
+.createQuestion .multiple div:first-of-type {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.createQuestion .multiple div:first-of-type div {
+  flex: 1 1 200px;
+}
+
+.createQuestion .multiple label {
+  width: 100%;
+  background-color: #878787;
+  border: 2px solid #878787;
+  border-radius: 6px;
+}
+
+.createQuestion .multiple label input {
+  width: 90%;
+  border-radius: 6px;
+  border: none;
+}
+
+.createQuestion .buttons button {
+  padding: 5px 25px;
+  margin: 10px 0 10px 0;
+}
+
+.createQuestion .buttons button:first-of-type {
+  margin: 10px 10px 10px 0;
+}
+
+.createExam form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 40px 0 20px;
+}
+
+.createExam form>input {
+  border-radius: 6px;
+  flex: 1 1 200px;
+}
+
+.createExam form .publicPrivate {
+  flex: 1 1 200px;
+  display: flex;
+  gap: 10px;
+}
+
+.createExam form .publicPrivate input {
+  display: none;
+}
+
+.createExam form .publicPrivate label {
+  border: 2px solid #878787;
+  border-radius: 6px;
+  padding: 10px 40px;
+  flex: 1;
+  text-align: center;
+}
+
+.createExam form .license {
+  width: 100%;
+}
+
+.createExam form>button {
+  flex: 1 1 200px;
+}
+
+.createExam form .license {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.createExam form .license label {
+  text-align: justify;
+}
+
+.createExam form .license input {
+  width: 18px;
+  height: 18px;
+}
+
+.questions,
+.questions ul {
+  width: 100%;
+}
+
+.questions .mainList>li {
+  padding: 20px 20px 60px 20px;
+  margin: 0 0 20px;
+  position: relative;
+}
+
+.questions .order {
+  border: 2px solid #6400b0;
+  display: inline-block;
+  border-radius: 50%;
+  padding: 10px 19px;
+}
+
+.questions .score {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.questions .yourScore {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.questions .content {
+  margin: 30px 0;
+}
+
+.questions .trueFalse div {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.questions .trueFalse div span {
+  border-radius: 6px;
+  padding: 10px 20px;
+  border: 2px solid #878787;
+  display: inline-block;
+}
+
+.trueFalse .trueFalseAnswerForm input {
+  display: none;
+}
+
+.trueFalse .trueFalseAnswerForm label {
+  padding: 10px 20px;
+  border: 2px solid #878787;
+  border-radius: 6px;
+}
+
+.questions .noAnswer {
+  color: #827b00;
+  margin: 0 0 30px;
+  text-align: center;
+}
+
+.questions .multiple ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.questions .multiple .showLi {
+  border: 2px solid #878787;
+  border-radius: 6px;
+  padding: 10px 20px;
+  flex: 1 1 200px;
+}
+
+.questions .multiple .answerLi {
+  flex: 1 1 200px;
+}
+
+.questions .multiple input {
+  display: none;
+}
+
+.questions .multiple label {
+  padding: 10px 20px;
+  border: 2px solid #878787;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.questions .examScore {
+  margin: 10px 0 30px;
+}
+
+.questions .grading {
+  border-radius: 6px;
+  width: 200px;
+  margin-top: 20px;
+}
+
+.questions .descriptive textarea {
+  width: 100%;
+  font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  border: 2px solid #878787;
+  border-radius: 6px;
+  resize: none;
+  padding: 20px;
+  min-height: 50px;
+  outline: none;
+}
+
+.questionsPage .getPassword {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 80px;
+  gap: 20px;
+}
+
+.questionsPage .getPassword input {
+  border-radius: 6px;
+}
+
+.questionsPage .nameExam ,
+.answersPage .nameExam{
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.questionsPage>form:last-of-type>button {
+  display: block;
+  margin: 0 auto 0;
+}
+
+.loginPage>button {
+  display: block;
+  margin: 20px auto 0;
+  width: 250px;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.authForm input {
+  border-radius: 6px;
+  width: 250px;
+}
+
+.authForm button {
+  width: 250px;
+}
+
+.examPage>ul li {
+  margin: 10px;
+  border: 1px solid #686868;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.examPage>ul li> form {
+  margin-top: 40px;
+}
+
+.examPage>ul li>p{
+  cursor: pointer;
+}
+
+.centerLoader{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100dvh - 150px);
+}
+
+.smallLoader{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

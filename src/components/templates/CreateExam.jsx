@@ -35,7 +35,7 @@ function CreateExam({ userId, questions, setQuestions }) {
     }
 
     return (
-        <div>
+        <div className="createExam">
             <form onSubmit={formHandler}>
                 <input
                     type="text"
@@ -43,11 +43,11 @@ function CreateExam({ userId, questions, setQuestions }) {
                     onChange={e => setExamForm(prevForm => ({ ...prevForm, name: e.target.value }))}
                     value={examForm.name}
                 />
-                <div>
-                    <input type="radio" name="access" checked={examForm.access == 'private'} onChange={() => setExamForm(prevForm => ({ ...prevForm, access: 'private' }))} />
-                    <span>private</span>
-                    <input type="radio" name="access" checked={examForm.access == 'public'} onChange={() => setExamForm(prevForm => ({ ...prevForm, access: 'public' }))} />
-                    <span>public</span>
+                <div className="publicPrivate">
+                    <input id="inputPrivate" type="radio" name="access" checked={examForm.access == 'private'} onChange={() => setExamForm(prevForm => ({ ...prevForm, access: 'private' }))} />
+                    <label htmlFor="inputPrivate" style={{ borderColor: examForm.access == 'private' ? '#ccc' : 'inherit' }}>Private</label>
+                    <input id="inputPublic" type="radio" name="access" checked={examForm.access == 'public'} onChange={() => setExamForm(prevForm => ({ ...prevForm, access: 'public' }))} />
+                    <label htmlFor="inputPublic" style={{ borderColor: examForm.access == 'public' ? '#ccc' : 'inherit' }}>Public</label>
                 </div>
                 {examForm.access === 'private' && (
                     <input
@@ -57,15 +57,15 @@ function CreateExam({ userId, questions, setQuestions }) {
                         value={examForm.password}
                     />
                 )}
-                <br />
-                <input type="checkbox" checked={license} onChange={e => setLicense(e.target.checked)} />
-                <span>Can the questions from this test be used as general questions in the program?</span>
-                <br />
-                <button type="submit">Send</button>
+                <button type="submit">Create Exam</button>
+                <div className="license">
+                    <input type="checkbox" id="license" checked={license} onChange={e => setLicense(e.target.checked)} />
+                    <label htmlFor="license">Can the questions from this test be used as general questions in the program?</label>
+                </div>
             </form>
 
             <div>
-                <Questions questions={questions} />
+                <Questions questions={questions} type='createQuestion' />
             </div>
         </div>
     )

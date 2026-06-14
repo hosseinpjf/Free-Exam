@@ -5,15 +5,16 @@ import useUser from "hooks/useUser";
 import { useGetAnswers, useGetExam, useGetQuestions, useGetSingleExam } from "services/question";
 
 import Questions from "components/templates/Questions";
+import Loader from "components/modules/Loader";
 
 function AnswersPage() {
     const [datas, setDatas] = useState({ userId: '', questionsId: [] });
     const { examId } = useParams();
     const { user } = useUser();
-    const { data: exam } = useGetExam(examId);
-    const { data: singleExam } = useGetSingleExam(examId);
-    const { data: answers } = useGetAnswers(datas.userId, examId);
-    const { data: questions } = useGetQuestions(datas.questionsId);
+    const { data: exam , isPending: pendingExam } = useGetExam(examId);
+    const { data: singleExam , isPending: pendingSingleExam } = useGetSingleExam(examId);
+    const { data: answers , isPending: pendingAnswers } = useGetAnswers(datas.userId, examId);
+    const { data: questions , isPending: pendingQuestions } = useGetQuestions(datas.questionsId);
 
     useEffect(() => {
         if (user) setDatas(prevDatas => ({ ...prevDatas, userId: user.$id }));
@@ -26,10 +27,11 @@ function AnswersPage() {
         }
     }, [answers])
 
+    if(pendingAnswers || pendingExam || pendingQuestions || pendingSingleExam) return <Loader position='centerLoader' />
     return (
-        <div>
-            <h2>AnswersPage</h2>
-            <h4>{exam?.name ? exam.name : 'Free Exam'}</h4>
+        <div className="answersPage">
+            <h2 className="title">Answers Page</h2>
+            <h2 className="nameExam">{exam?.name ? exam.name : 'Free Exam'}</h2>
             {exam && (
                 <Questions type='show' access={exam.access == 'single'} scoreExam={singleExam?.scoreExam} questions={questions} answers={answers?.documents} />
             )}

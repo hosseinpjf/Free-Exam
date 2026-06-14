@@ -12,6 +12,7 @@ function AuthPage() {
 
     return (
         <div className="loginPage">
+            <h2 className="title">Auth Page</h2>
             <AuthForm inputs={inputs()} />
             <button onClick={() => setStep(prevStep => prevStep === 1 ? 2 : 1)}>
                 {step === 1 ? "Login" : "Register"}

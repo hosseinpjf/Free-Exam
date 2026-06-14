@@ -46,7 +46,7 @@ function AuthForm({ inputs }) {
     }
 
     return (
-        <form onSubmit={submitHandler}>
+        <form className='authForm' onSubmit={submitHandler}>
             {inputs.map(item => (
                 <input
                     key={item}

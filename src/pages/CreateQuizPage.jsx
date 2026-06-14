@@ -11,18 +11,18 @@ function CreateQuizPage() {
   const { user } = useUser();
 
   return (
-    <div>
-      <h2>CreateQuizPage</h2>
+    <div className="createQuizPage">
+      <h2 className="title">Create Quiz Page</h2>
       <div>
-        <button onClick={() => setQuizType('question')} disabled={quizType == 'question'}>Create question page</button>
-        <button onClick={() => setQuizType('exam')} disabled={quizType == 'exam'}>Create exam page</button>
+        <button style={{ color: quizType == 'question' ? '#fff' : 'inherit' }} onClick={() => setQuizType('question')} disabled={quizType == 'question'}>Create question page</button>
+        <button style={{ color: quizType == 'exam' ? '#fff' : 'inherit' }} onClick={() => setQuizType('exam')} disabled={quizType == 'exam'}>Create exam page</button>
       </div>
       {quizType === 'exam' && (
         <CreateExam userId={user?.$id} questions={questions} setQuestions={setQuestions} />
       )}
-      <div style={{ border: '2px solid #ccc', margin: '20px' }}>
+      {/* <div style={{ border: '2px solid #ccc', margin: '20px' }}> */}
         <CreateQuestion userId={user?.$id} quizType={quizType} questionsLength={questions.length} setQuestions={setQuestions} />
-      </div>
+      {/* </div> */}
     </div>
   )
 }

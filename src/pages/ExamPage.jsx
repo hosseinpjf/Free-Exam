@@ -1,3 +1,4 @@
+import Loader from "components/modules/Loader";
 import Questions from "components/templates/Questions";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -12,12 +13,12 @@ function ExamPage() {
 
     const { examId } = useParams();
 
-    const { data } = useGetExamUsers(examId);
-    const { data: answers, refetch: refetchAnswers } = useGetAnswersUser(datas.personId, examId);
-    const { data: questions } = useGetQuestions(datas.questionsId);
+    const { data, isPending: pendingExamUsers } = useGetExamUsers(examId);
+    const { data: answers, refetch: refetchAnswers, isPending: pendingAnswersUser } = useGetAnswersUser(datas.personId, examId);
+    const { data: questions, isPending: pendingQuestions } = useGetQuestions(datas.questionsId);
     const { mutate: updateScoreAnswer } = useUpdateScoreAnswer();
     const { mutate: updateScoreExam } = useUpdateScoreExam();
-    const { data: userAnswer } = useGetUser(data);
+    const { data: userAnswer, isPending: pendingUsers } = useGetUser(data);
 
     useEffect(() => {
         if (answers) {
@@ -36,8 +37,11 @@ function ExamPage() {
     }
 
     const clickHandler = personId => {
-        if (personId == datas.personId) setCheckData(false);
-        setDatas(prevDatas => ({ ...prevDatas, personId }));
+        if (personId == datas.personId) {
+            setCheckData(false);
+            setDatas(prevDatas => ({ ...prevDatas, personId: '' }));
+        }
+        else setDatas(prevDatas => ({ ...prevDatas, personId }));
     }
 
     const formHandler = e => {
@@ -60,18 +64,24 @@ function ExamPage() {
             onError: () => toast.error('There was a problem registering the score.', { id: 'scoreError' })
         })
     }
+
+    if (pendingExamUsers || pendingUsers) return <Loader position='centerLoader' />
     return (
-        <div>
-            <h2>ExamPage</h2>
+        <div className="examPage">
+            <h2 className="title">Exam Page</h2>
             <ul>
                 {data?.map(id => (
                     <li key={id}>
                         <p onClick={() => clickHandler(id)}>{findNameUser(id)}</p>
-                        {checkData && (datas.personId == id) && questions && answers && (
-                            <form onSubmit={formHandler}>
-                                <Questions questions={questions} answers={answers.documents} form={form} setForm={setForm} type='TeacherForm' />
-                                <button type="submit">submit</button>
-                            </form>
+                        {checkData && (datas.personId == id) && (
+                            <>
+                                {(pendingAnswersUser || pendingQuestions) ? <Loader position='smallLoader' /> : (
+                                    <form onSubmit={formHandler}>
+                                        <Questions questions={questions} answers={answers?.documents} form={form} setForm={setForm} type='TeacherForm' />
+                                        <button type="submit">submit</button>
+                                    </form>
+                                )}
+                            </>
                         )}
                     </li>
                 ))}

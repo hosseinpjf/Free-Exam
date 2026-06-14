@@ -42,63 +42,101 @@ function Questions({ type, access, scoreExam, questions, answers, form, setForm 
         }
     }
 
+    const verifyAnswer = (correctOption, content, index) => {
+        if (correctOption == index) return '#00750a'
+        if (content == index && content != correctOption) return '#880000'
+        else return '#878787'
+    }
+
     return (
-        <div>
+        <div className="questions">
             {type == 'show' && (
-                <p>Your Exam score: {access ? `${scoreExam} out of ${questions?.length}` : `${scoreExam || 'Awaiting confirmation'} out of ${questions?.reduce((acc, cur) => cur.score + acc, 0)}`}</p>
+                <p className="examScore">Your exam score: {access ? `${scoreExam} out of ${questions?.length}` : `${scoreExam || '(Awaiting confirmation)'} out of ${questions?.reduce((acc, cur) => cur.score + acc, 0)}`}</p>
             )}
-            <ul>
+            <ul className="mainList">
                 {questions?.map((question, index) => (
-                    <li key={question.$id || index}>
-                        {!access && (<p>{question.order}</p>)}
-                        {!access && (<p>score: {question.score}</p>)}
-                        <p>{question.content}</p>
+                    <li className="boxShadow" key={question.$id || index}>
+                        {!access && (<p className="order">{question.order}</p>)}
+                        {!access && (<p className="score">score: {question.score}</p>)}
+                        <p className="content">{question.content}</p>
+                        {(type == 'show' || type == 'TeacherForm') && findAnswer(question.$id).content == 'no answer' && <p className="noAnswer">You have not answered this question.</p>}
                         {question.type === 'descriptive' && (
-                            <>
+                            <div className="descriptive">
                                 {(type == 'answerForm') && (<textarea onChange={e => answerHandler(question.$id, e.target.value)}></textarea>)}
                                 {(type == 'show' || type == 'TeacherForm') && (
                                     <>
-                                        <p>{findAnswer(question.$id).content}</p>
-                                        {!access && (<p>--- Your Score: {findAnswer(question.$id).scoreAnswer || (findAnswer(question.$id).scoreAnswer == 0 && '0') || 'Awaiting confirmation'} ---</p>)}
+                                        <p>{findAnswer(question.$id).content != 'no answer' && findAnswer(question.$id).content}</p>
+                                        {!access && (<p className="yourScore">Your Score: {findAnswer(question.$id).scoreAnswer || (findAnswer(question.$id).scoreAnswer == 0 && '0') || '(Awaiting confirmation)'}</p>)}
                                     </>
                                 )}
-                                {(type == 'TeacherForm') && (<input type="number" onChange={e => sendScore(question.$id, e.target.value)} min={0} max={question.score} />)}
-                            </>
+                                {(type == 'TeacherForm') && (<input className="grading" placeholder="Give a score" type="number" onChange={e => sendScore(question.$id, e.target.value)} min={0} max={question.score} />)}
+                            </div>
                         )}
                         {question.type === 'true-false' && (
-                            <div>
-                                {(type == 'answerForm') && (<input type="radio" name={question.$id} onChange={() => answerHandler(question.$id, '20', question.correctOption, question.score)} />)}
+                            <div className="trueFalse">
+                                {(type == 'answerForm') && (
+                                    <div className="trueFalseAnswerForm">
+                                        <input type="radio" id={`multipleOne${question.$id}`} name={question.$id} onChange={() => answerHandler(question.$id, '20', question.correctOption, question.score)} />
+                                        <label htmlFor={`multipleOne${question.$id}`} style={{ borderColor: form.find(item => item.questionId == question.$id)?.content == '20' ? '#00a30b' : '#878787' }}>True</label>
+
+                                        <input type="radio" id={`multipleTwo${question.$id}`} name={question.$id} onChange={() => answerHandler(question.$id, '10', question.correctOption, question.score)} />
+                                        <label htmlFor={`multipleTwo${question.$id}`} style={{ borderColor: form.find(item => item.questionId == question.$id)?.content == '10' ? '#00a30b' : '#878787' }}>False</label>
+                                    </div>
+                                )}
+
+                                {/* {(type == 'answerForm') && (<input type="radio" name={question.$id} onChange={() => answerHandler(question.$id, '20', question.correctOption, question.score)} />)}
                                 <span>True</span>
-                                <br />
                                 {(type == 'answerForm') && (<input type="radio" name={question.$id} onChange={() => answerHandler(question.$id, '10', question.correctOption, question.score)} />)}
-                                <span>False</span>
+                                <span>False</span> */}
                                 {(type == 'show' || type == 'TeacherForm') && (
-                                    <>
-                                        <p>Correct answer option: {question.correctOption == 20 ? 'true' : 'false'}</p>
-                                        <p>Your answer option: {findAnswer(question.$id).content == 20 ? 'true' : (findAnswer(question.$id).content == 10 ? 'false' : 'no answer')}</p>
-                                        {!access && (<p>--- Your Score: {findAnswer(question.$id).scoreAnswer} ---</p>)}
-                                    </>
+                                    <div>
+                                        <span style={{ borderColor: verifyAnswer(question.correctOption, findAnswer(question.$id).content, 20) }}>True</span>
+                                        <span style={{ borderColor: verifyAnswer(question.correctOption, findAnswer(question.$id).content, 10) }}>False</span>
+
+
+                                        {/* <p>Correct answer option: {question.correctOption == 20 ? 'true' : 'false'}</p>
+                                        <p>Your answer option: {findAnswer(question.$id).content == 20 ? 'true' : (findAnswer(question.$id).content == 10 ? 'false' : 'no answer')}</p> */}
+                                        {!access && (<p className="yourScore">Your Score: {findAnswer(question.$id).scoreAnswer}</p>)}
+                                    </div>
+                                )}
+                                {type == 'createQuestion' && (
+                                    <div>
+                                        <span style={{ borderColor: verifyAnswer(question.correctOption, undefined, 20) }}>True</span>
+                                        <span style={{ borderColor: verifyAnswer(question.correctOption, undefined, 10) }}>False</span>
+                                    </div>
                                 )}
                             </div>
                         )}
                         {question.type === 'multiple-choice' && (
-                            <>
+                            <div className="multiple">
                                 <ul>
-                                    {question.options.map((option, index) => (
-                                        <li key={index}>
-                                            {(type == 'answerForm') && (<input name={question.$id} type="radio" onChange={() => answerHandler(question.$id, String(index + 1), question.correctOption, question.score)} />)}
-                                            <span>{option}</span>
-                                        </li>
-                                    ))}
+                                    {(type != 'answerForm') ? (
+                                        <>
+                                            {question.options.map((option, index) => (
+                                                <li className="showLi" key={index} style={(type == 'show' || type == 'TeacherForm' || type == 'createQuestion') ? { borderColor: verifyAnswer(question.correctOption, (type == 'createQuestion' ? undefined : findAnswer(question.$id).content), (index + 1)) } : {}}>
+                                                    <span>{option}</span>
+                                                </li>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {question.options.map((option, index) => (
+                                                <li className="answerLi" key={index}>
+                                                    <input id={`multiple${question.$id}-${index}`} name={question.$id} type="radio" onChange={() => answerHandler(question.$id, String(index + 1), question.correctOption, question.score)} />
+                                                    <label htmlFor={`multiple${question.$id}-${index}`} style={{ borderColor: form.find(item => item.questionId == question.$id)?.content == index + 1 ? '#00a30b' : '#878787' }}>{option}</label>
+                                                </li>
+                                            ))}
+                                        </>
+                                    )}
                                 </ul>
                                 {(type == 'show' || type == 'TeacherForm') && (
                                     <>
-                                        <p>Correct answer option: {question.correctOption}</p>
-                                        <p>Your answer option: {findAnswer(question.$id).content}</p>
-                                        {!access && (<p>--- Your Score: {findAnswer(question.$id).scoreAnswer} ---</p>)}
+                                        {/* <p>Correct answer option: {question.correctOption}</p>
+                                        <p>Your answer option: {findAnswer(question.$id).content}</p> */}
+                                        {!access && (<p className="yourScore">Your Score: {findAnswer(question.$id).scoreAnswer}</p>)}
                                     </>
                                 )}
-                            </>
+                            </div>
                         )}
                     </li>
                 ))}
